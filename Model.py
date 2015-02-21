@@ -34,3 +34,14 @@ class Model():
                 return self.email
 
         self.User = User
+
+        class Lichen(db.Model):
+            id = db.Column(db.Integer, primary_key=True)
+            name = db.Column(db.String)
+            image = db.Column(db.String)
+            description = db.Column(db.String)
+            def __init__(self, name, imagepath):
+                self.image = imagepath
+                self.name = name
+
+        self.Lichen = Lichen

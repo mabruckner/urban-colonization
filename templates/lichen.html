@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+.item {
+    width: 25%;
+}
+</style>
+<script src ="js/masonry.pkgd.min.js"></script>
+
+<div class="container" class="js-masonry" data-masonry-options='{"ItemSelector" : ".item", "columnWidth" : 500}'>
+{% for lichen in lichens %}
+<div class="item"><img src="{{ lichen.image }}"></img> </div>
+{% endfor %}
+</div>
+
+{% endblock %}

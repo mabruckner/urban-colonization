@@ -17,6 +17,7 @@ loginmanager.init_app(app)
 
 model = Model(app)
 db = model.db
+User = model.User
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/fhb.db'
 
@@ -65,6 +66,11 @@ def logout():
     logout_user()
     return redirect(request.args.get("redirect"))
 
+@app.route('/lichen',methods=['GET'])
+def lichen():
+    lichens = model.Lichen.query.all()
+    return render_template('lichen.html',lichens = lichens,form = LoginForm())
+
 @app.route('/makeuser', methods=['GET'])
 def makeuser():
     admin = User('admin', 'admin@example.com')
@@ -72,6 +78,15 @@ def makeuser():
     db.session.add(admin)
     db.session.commit()
     return "True"
+
+@app.route('/makelichen', methods=['GET'])
+def makelichen():
+    l1 = model.Lichen("HELLO","img/lichen_wolf_eyes.jpg")
+    l2 = model.Lichen("GOODBYE","img/lichen_wolf_eyes.jpg")
+    db.session.add(l1)
+    db.session.add(l2)
+    db.session.commit()
+    return "\\OoO/"
 
 @app.route('/getuser', methods=['GET'])
 def getuser():
@@ -84,6 +99,11 @@ def hello():
     return render_template('index.html',form=LoginForm())
 
 app.secret_key = "Secret"
+
+@app.route('/js/<remainder>',methods=['GET'])
+@app.route('/img/<remainder>',methods=['GET'])
+def get_static(remainder):
+    return send_from_directory(app.static_folder,request.path[1:])
 
 if __name__ == "__main__":
     app.run(host="0.0.0")
