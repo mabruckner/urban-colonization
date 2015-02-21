@@ -11,17 +11,18 @@ class Model():
             email = db.Column(db.String(120), unique=True)
             password = db.Column(db.String)
             authenticated = db.Column(db.Boolean())
+            is_first_time = db.Column(db.Boolean())
 
             def __init__(self, username, email):
                 self.username = username
                 self.email = email
                 self.authenticated = False
+                self.is_first_time = True
 
             def __repr__(self):
                 return '<User %r>' % self.username
 
             def is_authenticated(self) :
-                print(self.email)
                 return self.authenticated
 
             def is_active(self) :

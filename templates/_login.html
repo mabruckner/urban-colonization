@@ -1,8 +1,8 @@
+{% include "_modal_splash.html" %}
 {% if current_user.is_authenticated() %}
-<p class="navbar-btn navbar-right">
-<a class="btn btn-default" href="logout?redirect={{ request.path }}">
-    Logout
-</a>
+<p class=" navbar-right navbar-text">
+    <span class="username">{{ current_user.username }}</span>
+    | <a class="navbar-link" href="logout?redirect={{ request.path }}"> Logout </a>
 </p>
 {% else %}
 <form class="navbar-form navbar-right" method="POST" action="/login">

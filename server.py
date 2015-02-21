@@ -2,24 +2,29 @@ from flask import *
 
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.assets import Environment, Bundle
+
 from htmlmin import minify
 from flask.ext.login import LoginManager,login_user,logout_user, current_user, AnonymousUserMixin
 from flask_wtf import Form
 from wtforms import StringField, PasswordField
 from wtforms.validators import DataRequired
+
 from passlib.hash import pbkdf2_sha256
+
 
 from Model import Model
 
 app = Flask(__name__)
-loginmanager = LoginManager()
-loginmanager.init_app(app)
+app.secret_key = "Secret"
+
+login_manager = LoginManager()
+login_manager.init_app(app)
 
 model = Model(app)
 db = model.db
 User = model.User
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/fhb.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/uc.db'
 
 app.config['DEBUG'] = True
 app.config['PROPAGATE_EXCEPTIONS'] = True
@@ -28,7 +33,7 @@ app.config['TRAP_BAD_REQUEST_ERRORS'] = True
 assets = Environment(app)
 assets.url_expire = False
 
-css = Bundle('css/main.css', 'css/bootstrap.css', 'css/bootstrap-theme.css', filters="cssmin", output='css/gen/packed.css')
+css = Bundle('css/main.css', 'css/bootstrap.css', filters="cssmin", output='css/gen/packed.css')
 assets.register('css_all', css)
 
 js = Bundle("js/vendor/jquery-1.11.2.min.js", "js/vendor/modernizr-2.8.3.min.js", 'js/bootstrap.js', 'js/main.js', output='js/gen/packed.js')
@@ -38,12 +43,15 @@ class LoginForm(Form):
     name = StringField('name',validators=[DataRequired()])
     password = PasswordField('password',validators=[DataRequired()])
 
-class Anonymous(AnonymousUserMixin):
-  def __init__(self):
-    self.username = 'Guest'
-    self.is_new = True
+class Anonymous(AnonymousUserMixin, User):
+    def __init__(self):
+        User.__init__(self, "", "")
 
-@loginmanager.user_loader
+    def is_anonymous(self):
+        return True
+login_manager.anonymous_user = Anonymous
+
+@login_manager.user_loader
 def load_user(userid):
     users =  User.query.filter_by(email=userid)
     return users.first()
