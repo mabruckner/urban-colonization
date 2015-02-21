@@ -3,16 +3,20 @@ from flask import *
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.assets import Environment, Bundle
 from htmlmin import minify
-from flask.ext.login import LoginManager,login_user,logout_user
+from flask.ext.login import LoginManager,login_user,logout_user, current_user, AnonymousUserMixin
 from flask_wtf import Form
 from wtforms import StringField, PasswordField
 from wtforms.validators import DataRequired
 from passlib.hash import pbkdf2_sha256
 
+from Model import Model
+
 app = Flask(__name__)
 loginmanager = LoginManager()
 loginmanager.init_app(app)
 
+model = Model(app)
+db = model.db
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/fhb.db'
 
@@ -26,42 +30,17 @@ assets.url_expire = False
 css = Bundle('css/main.css', 'css/bootstrap.css', 'css/bootstrap-theme.css', filters="cssmin", output='css/gen/packed.css')
 assets.register('css_all', css)
 
-js = Bundle("js/vendor/jquery-1.11.2.min.js", "js/vendor/modernizr-2.8.3.min.js", 'js/bootstrap.js', 'js/main.js', filters="jsmin", output='js/gen/packed.js')
+js = Bundle("js/vendor/jquery-1.11.2.min.js", "js/vendor/modernizr-2.8.3.min.js", 'js/bootstrap.js', 'js/main.js', output='js/gen/packed.js')
 assets.register('js_all', js)
-
-db = SQLAlchemy(app)
 
 class LoginForm(Form):
     name = StringField('name',validators=[DataRequired()])
     password = PasswordField('password',validators=[DataRequired()])
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True)
-    email = db.Column(db.String(120), unique=True)
-    password = db.Column(db.String)
-    authenticated = db.Column(db.Boolean())
-
-    def __init__(self, username, email):
-        self.username = username
-        self.email = email
-        self.authenticated = False
-
-    def __repr__(self):
-        return '<User %r>' % self.username
-
-    def is_authenticated(self) :
-        print(self.email)
-        return self.authenticated
-
-    def is_active(self) :
-        return self.is_authenticated()
-
-    def is_anonymous(self) :
-        return False
-
-    def get_id(self) :
-        return self.email
+class Anonymous(AnonymousUserMixin):
+  def __init__(self):
+    self.username = 'Guest'
+    self.is_new = True
 
 @loginmanager.user_loader
 def load_user(userid):
@@ -101,6 +80,7 @@ def getuser():
 
 @app.route('/', methods=['GET','POST'])
 def hello():
+    #return current_user.username
     return render_template('index.html',form=LoginForm())
 
 app.secret_key = "Secret"

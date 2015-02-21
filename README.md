@@ -1,5 +1,4 @@
-# fhb
-Flask Hackathon Base
+# Urban Colonization
 
 ```bash
 virtualenv --no-site-packages -p /usr/bin/python2 env
