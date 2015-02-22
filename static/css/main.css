@@ -38,3 +38,15 @@ nav.navbar .username {
 div.logincontainer {
     margin-top:40px;
 }
+
+.box {
+    width: 33.2%;
+}
+
+.box img {
+    width: 100.5%;
+}
+
+img.lichen {
+    width:10%;
+}

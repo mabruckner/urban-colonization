@@ -8,12 +8,14 @@ class Model():
 
         class Lichen(db.Model):
             id = db.Column(db.Integer, primary_key=True)
+            short_name = db.Column(db.String)
             name = db.Column(db.String)
             image = db.Column(db.String)
             description = db.Column(db.String)
-            def __init__(self, name, imagepath):
+            def __init__(self, short_name, name, imagepath):
                 self.image = imagepath
                 self.name = name
+                self.short_name = short_name
 
             def __str__(self):
                 return "(({}, {}, {}, {}))".format(self.id, self.name, self.image, self.description)
@@ -49,7 +51,6 @@ class Model():
                 self.authenticated = False
                 self.is_first_time = True
                 self.current_clue = self.get_initial_clue()
-                print "Setting clue to {}".format(self.current_clue)
                 self.hint_access = "{}"
 
             def __repr__(self):

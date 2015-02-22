@@ -1,0 +1,18 @@
+{% extends "navbarbase.html" %}
+{% block navcontent %}
+<div style="position: relative; height: 1716px;" id="container" class="clearfix masonry">
+
+    {% for lichen in lichens %}
+        <div style="position: absolute; top: 5px; left: 5px;" class="box photo col3 masonry-brick">
+            <a href="/lichens/{{ lichen.short_name }}"><img src="{{ lichen.image }}"></a>
+        </div>
+    {% endfor %}
+</div>
+
+<div class="container">
+    <!-- Example row of columns -->
+    <div class="row">
+    </div>
+</div>
+{% endblock %}
+

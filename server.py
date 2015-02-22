@@ -4,7 +4,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.assets import Environment, Bundle
 
 from htmlmin import minify
-from flask.ext.login import LoginManager,login_user,logout_user, current_user, AnonymousUserMixin
+from flask.ext.login import LoginManager,login_user,logout_user, current_user
 from flask_wtf import Form
 from wtforms import StringField, PasswordField
 from wtforms.validators import DataRequired
@@ -22,7 +22,6 @@ login_manager.init_app(app)
 
 model = Model(app)
 db = model.db
-User = model.User
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/uc.db'
 
@@ -36,9 +35,6 @@ assets.url_expire = False
 css = Bundle('css/main.css', 'css/bootstrap.css', filters="cssmin", output='css/gen/packed.css')
 assets.register('css_all', css)
 
-js = Bundle("js/vendor/jquery-1.11.2.min.js", "js/vendor/modernizr-2.8.3.min.js", 'js/bootstrap.js', 'js/main.js', output='js/gen/packed.js')
-assets.register('js_all', js)
-
 class LoginForm(Form):
     name = StringField('name',validators=[DataRequired()])
     password = PasswordField('password',validators=[DataRequired()])
@@ -48,14 +44,6 @@ class SignupForm(Form):
     password = PasswordField('password',validators=[DataRequired()])
     repeatpassword = PasswordField('repeatpassword',validators=[DataRequired()])
 
-class Anonymous(AnonymousUserMixin, User):
-    def __init__(self):
-        User.__init__(self, "", "")
-
-    def is_anonymous(self):
-        return True
-login_manager.anonymous_user = Anonymous
-
 def create_user(username,password):
     newuser = model.User(username,"")
     newuser.password = pbkdf2_sha256.encrypt(password)
@@ -64,14 +52,14 @@ def create_user(username,password):
 
 @login_manager.user_loader
 def load_user(userid):
-    users =  User.query.filter_by(email=userid)
+    users =  model.User.query.filter_by(email=userid)
     return users.first()
 
 @app.route('/authenticate', methods=['GET','POST'])
 def authenticate():
     form = LoginForm()
     if form.validate_on_submit():
-        users = User.query.filter_by(username = request.form["name"])
+        users = model.User.query.filter_by(username = request.form["name"])
         user = users.first()
         if user != None :
             if pbkdf2_sha256.verify(request.form["password"],user.password) :
@@ -87,7 +75,7 @@ def login():
         return render_template("signin.html",form = form,error = "")
     error = "some fields were empty"
     if form.validate_on_submit():
-        users = User.query.filter_by(username = request.form["name"])
+        users = model.User.query.filter_by(username = request.form["name"])
         user = users.first()
         if user != None :
             if pbkdf2_sha256.verify(request.form["password"],user.password) :
@@ -122,14 +110,9 @@ def logout():
     logout_user()
     return redirect(request.args.get("redirect"))
 
-@app.route('/lichen',methods=['GET'])
-def lichen():
-    lichens = model.Lichen.query.all()
-    return render_template('lichen.html',lichens = lichens,form = LoginForm())
-
 @app.route('/makeuser', methods=['GET'])
 def makeuser():
-    admin = User('admin', 'admin@example.com')
+    admin = model.User('admin', 'admin@example.com')
     admin.password = pbkdf2_sha256.encrypt("password")
     db.session.add(admin)
     db.session.commit()
@@ -146,12 +129,22 @@ def makelichen():
 
 @app.route('/getuser', methods=['GET'])
 def getuser():
-    admin = User.query.filter_by(username='admin').first()
+    admin = model.User.query.filter_by(username='admin').first()
     return admin.username
 
 @app.route('/', methods=['GET','POST'])
-def hello():
+def index():
     return render_template('index.html',form=LoginForm(), hint=current_user.current_clue.text)
+
+@app.route('/lichens', methods=['GET','POST'])
+def lichens():
+    lichens = model.Lichen.query.all()
+    return render_template('lichens.html',form=LoginForm(), lichens=lichens)
+
+@app.route('/lichens/<name>', methods=['GET','POST'])
+def lichen(name):
+    lichen = model.Lichen.query.filter_by(short_name=name).first()
+    return render_template('lichen.html',form=LoginForm(), lichen=lichen)
 
 @app.route('/js/<remainder>',methods=['GET'])
 @app.route('/img/<remainder>',methods=['GET'])

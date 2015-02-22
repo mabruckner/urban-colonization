@@ -30,9 +30,11 @@
             </footer>
             </div> <!-- /container -->
 
-            {% assets "js_all" %}
-            <script src="{{ ASSET_URL }}"></script>
-            {% endassets %}
+            <script src="{{ url_for("static", filename="js/vendor/jquery-1.11.2.min.js") }}"></script>
+            <script src="{{ url_for("static", filename="js/masonry.pkgd.min.js") }}"></script>
+            <script src="{{ url_for("static", filename="js/imagesloaded.pkgd.js") }}"></script>
+            <script src="{{ url_for("static", filename="js/bootstrap.js") }}"></script>
+            <script src="{{ url_for("static", filename="js/main.js") }}"></script>
 
             {% if current_user.is_first_time %}
                 <script>
