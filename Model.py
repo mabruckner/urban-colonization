@@ -1,6 +1,7 @@
 from flask.ext.sqlalchemy import SQLAlchemy
 import random
 from perform import zbarimg
+import json
 
 class Model():
     def __init__(self, app):
@@ -37,7 +38,7 @@ class Model():
             password = db.Column(db.String)
             authenticated = db.Column(db.Boolean())
             is_first_time = db.Column(db.Boolean())
-            hint_access = db.Column(db.String)
+            clue_access = db.Column(db.String)
 
             current_lichen_id = db.Column(db.Integer, db.ForeignKey('lichen.id'))
             current_lichen = db.relationship('Lichen', backref=db.backref('users', lazy='dynamic'))
@@ -48,7 +49,8 @@ class Model():
                 self.authenticated = False
                 self.is_first_time = True
                 self.current_lichen = User.get_random_lichen()
-                self.hint_access = "{}"
+                clue_map = {str(self.current_lichen.id) : "looking" }
+                self.hint_access = json.dumps(clue_map)
 
             def __repr__(self):
                 return '<User %r>' % self.username
@@ -64,6 +66,34 @@ class Model():
 
             def get_id(self) :
                 return self.username
+
+            def get_state_for(self,clueval):
+                cluemap = json.loads(self.hint_access)
+                return cluemap[clueval]
+            
+            def get_with_state(self,state):
+                cluemap = json.loads(self.hint_access)
+                cluestrings = []
+                for clustring in cluemap :
+                    if clumap[cluestring] == state :
+                        cluestrings.append(cluestring)
+                q = Lichen.query.all()
+                output = []
+                for lichen in q :
+                    if str(lichen.id) in cluestrings :
+                        output.append(lichen)
+                return output
+
+            def get_looking(self):
+                return self.get_with_state("looking")
+            def get_found(self):
+                return self.get_with_state("found")
+
+            def set_state(self,lichen,state):
+                l_map = json.loads(self.hint_access)
+                l_map[str(lichen.id)] = state
+                self.hint_access = json.dumps(l_map)
+                db.session.commit()
 
             @staticmethod
             def get_random_lichen():
