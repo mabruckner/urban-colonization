@@ -4,7 +4,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.assets import Environment, Bundle
 
 from htmlmin import minify
-from flask.ext.login import LoginManager,login_user,logout_user, current_user
+from flask.ext.login import LoginManager,login_user,logout_user, current_user, AnonymousUserMixin, login_required
 from flask_wtf import Form
 from wtforms import StringField, PasswordField
 from wtforms.validators import DataRequired
@@ -52,7 +52,7 @@ def create_user(username,password):
 
 @login_manager.user_loader
 def load_user(userid):
-    users =  model.User.query.filter_by(email=userid)
+    users =  model.User.query.filter_by(username=userid)
     return users.first()
 
 @app.route('/authenticate', methods=['GET','POST'])
@@ -105,6 +105,12 @@ def signup():
             error = "passwords did not match"
     return render_template("signup.html",form = form,error=error)
 
+@app.route('/signout')
+def signout():
+    logout_user()
+    return redirect('/signin')
+
+@login_required
 @app.route('/logout', methods=['GET'])
 def logout():
     logout_user()
@@ -132,6 +138,7 @@ def getuser():
     admin = model.User.query.filter_by(username='admin').first()
     return admin.username
 
+@login_required
 @app.route('/', methods=['GET','POST'])
 def index():
     return render_template('index.html',form=LoginForm(), hint=current_user.current_clue.text)
