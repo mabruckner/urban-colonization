@@ -11,6 +11,8 @@ from wtforms.validators import DataRequired
 
 from passlib.hash import pbkdf2_sha256
 
+import os
+
 
 from Model import Model
 
@@ -28,6 +30,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/uc.db'
 app.config['DEBUG'] = True
 app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config['TRAP_BAD_REQUEST_ERRORS'] = True
+
+UPLOAD_FOLDER = '/tmp/uc-pics'
 
 assets = Environment(app)
 assets.url_expire = False
@@ -167,6 +171,19 @@ def rotateclue():
     clue = model.User.get_random_clue()
     current_user.current_clue = clue
     db.session.commit()
+    return redirect("/")
+
+@login_required
+@app.route('/takepicture', methods=['GET'])
+def takepicture():
+    return render_template('takepicture.html')
+
+@login_required
+@app.route('/receivepicture', methods=['POST'])
+def recievepicture():
+    f = request.files['picture']
+    if f:
+        f.save(os.path.join(UPLOAD_FOLDER, f.filename))
     return redirect("/")
 
 @login_required
