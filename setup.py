@@ -46,5 +46,4 @@ db.session.add(a)
 
 db.session.commit()
 
-create_user('admin', 'password')
-#create_user('user', 'password')
+create_user('admin', 'admin@example.com', 'password')

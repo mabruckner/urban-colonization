@@ -36,7 +36,7 @@ class Model():
         class User(self.db.Model):
             id = db.Column(db.Integer, primary_key=True)
             username = db.Column(db.String(80), unique=True)
-#            email = db.Column(db.String(120), unique=True)
+            email = db.Column(db.String(120), unique=True)
             password = db.Column(db.String)
             authenticated = db.Column(db.Boolean())
             is_first_time = db.Column(db.Boolean())
@@ -47,7 +47,7 @@ class Model():
 
             def __init__(self, username, email):
                 self.username = username
-#                self.email = email
+                self.email = email
                 self.authenticated = False
                 self.is_first_time = True
                 self.current_lichen = User.get_random_lichen()

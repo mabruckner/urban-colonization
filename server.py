@@ -46,14 +46,16 @@ class LoginForm(Form):
 
 class SignupForm(Form):
     name = StringField('name',validators=[DataRequired()])
+    email = StringField('email',validators=[DataRequired()])
     password = PasswordField('password',validators=[DataRequired()])
     repeatpassword = PasswordField('repeatpassword',validators=[DataRequired()])
 
-def create_user(username,password):
-    newuser = model.User(username,"")
+def create_user(username,email,password):
+    newuser = model.User(username,email)
     newuser.password = pbkdf2_sha256.encrypt(password)
     db.session.add(newuser)
     db.session.commit()
+    return newuser
 
 @login_manager.user_loader
 def load_user(userid):
@@ -100,11 +102,10 @@ def signup():
     if form.validate_on_submit():
         error = "some fields were empty"
         if request.form["password"] == request.form["repeatpassword"] :
-            newuser = model.User(request.form["name"],"")
-            newuser.password = pbkdf2_sha256.encrypt(request.form["password"])
-            newuser.authenticated = True
-            db.session.add(newuser)
+            user = create_user(request.form["name"],request.form["email"],request.form["password"])
+            user.authenticated = True
             db.session.commit()
+            login_user(user)
             return redirect("/")
         else :
             error = "passwords did not match"
