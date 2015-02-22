@@ -1,7 +1,7 @@
 {% extends "navbarbase.html" %}
 {% block navcontent %}
-<h1>{{ lichen.name }}</h1>
-<img class="lichen" src="{{ lichen.image }}" alt=""> <br />
+<h1><img class="lichen" src="{{ lichen.image }}" alt=""> {{ lichen.name }}</h1>
+ <br />
 <div class="well">{{ lichen.description }}</div>
 <a class="btn btn-primary btn-lg" href="#">Confirm find</a>
 {% endblock %}

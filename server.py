@@ -4,7 +4,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.assets import Environment, Bundle
 
 from htmlmin import minify
-from flask.ext.login import LoginManager,login_user,logout_user, current_user, AnonymousUserMixin, login_required
+from flask.ext.login import LoginManager,login_user,logout_user, current_user, login_required
 from flask_wtf import Form
 from wtforms import StringField, PasswordField
 from wtforms.validators import DataRequired
@@ -105,6 +105,7 @@ def signup():
             error = "passwords did not match"
     return render_template("signup.html",form = form,error=error)
 
+@login_required
 @app.route('/signout')
 def signout():
     logout_user()
@@ -116,6 +117,7 @@ def logout():
     logout_user()
     return redirect(request.args.get("redirect"))
 
+@login_required
 @app.route('/makeuser', methods=['GET'])
 def makeuser():
     admin = model.User('admin', 'admin@example.com')
@@ -124,6 +126,7 @@ def makeuser():
     db.session.commit()
     return "True"
 
+@login_required
 @app.route('/makelichen', methods=['GET'])
 def makelichen():
     l1 = model.Lichen("HELLO","img/lichen_wolf_eyes.jpg")
@@ -133,26 +136,32 @@ def makelichen():
     db.session.commit()
     return "\\OoO/"
 
+@login_required
 @app.route('/getuser', methods=['GET'])
 def getuser():
     admin = model.User.query.filter_by(username='admin').first()
     return admin.username
 
 @login_required
-@app.route('/', methods=['GET','POST'])
+@app.route('/', methods=['GET'])
 def index():
+    if current_user.is_anonymous():
+        return redirect("/signin")
     return render_template('index.html',form=LoginForm(), hint=current_user.current_clue.text)
 
+@login_required
 @app.route('/lichens', methods=['GET','POST'])
 def lichens():
     lichens = model.Lichen.query.all()
     return render_template('lichens.html',form=LoginForm(), lichens=lichens)
 
+@login_required
 @app.route('/lichens/<name>', methods=['GET','POST'])
 def lichen(name):
     lichen = model.Lichen.query.filter_by(short_name=name).first()
     return render_template('lichen.html',form=LoginForm(), lichen=lichen)
 
+@login_required
 @app.route('/rotateclue', methods=['GET','POST'])
 def rotateclue():
     clue = model.User.get_random_clue()
@@ -160,6 +169,7 @@ def rotateclue():
     db.session.commit()
     return redirect("/")
 
+@login_required
 @app.route('/js/<remainder>',methods=['GET'])
 @app.route('/img/<remainder>',methods=['GET'])
 def get_static(remainder):

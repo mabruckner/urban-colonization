@@ -20,7 +20,10 @@
                 <li {% if request.path.startswith("/lichens") %}class="active"{% endif %}><a href="/lichens">Lichens</a></li>
                 <li {% if request.path.startswith("/profile") %}class="active"{% endif %}><a href="/profile">Profile</a></li>
             </ul>
-            <a href="/signout" class="btn btn-default navbar-btn navbar-right">Log out</a>
+            <span class="navbar-right">
+                <p class="navbar-text">You are logged in as <strong><a href="#">{{ current_user.username }}</strong></a></p>
+                <a href="/signout" class="btn btn-default navbar-btn">Log out</a>
+            </span>
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
 </nav>
