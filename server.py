@@ -151,7 +151,7 @@ def getuser():
 
 @app.route('/', methods=['GET','POST'])
 def hello():
-    return render_template('index.html',form=LoginForm())
+    return render_template('index.html',form=LoginForm(), hint=current_user.current_clue.text)
 
 @app.route('/js/<remainder>',methods=['GET'])
 @app.route('/img/<remainder>',methods=['GET'])

@@ -49,6 +49,7 @@ class Model():
                 self.authenticated = False
                 self.is_first_time = True
                 self.current_clue = self.get_initial_clue()
+                print "Setting clue to {}".format(self.current_clue)
                 self.hint_access = "{}"
 
             def __repr__(self):
