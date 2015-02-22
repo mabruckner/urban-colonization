@@ -43,6 +43,11 @@ class LoginForm(Form):
     name = StringField('name',validators=[DataRequired()])
     password = PasswordField('password',validators=[DataRequired()])
 
+class SignupForm(Form):
+    name = StringField('name',validators=[DataRequired()])
+    password = PasswordField('password',validators=[DataRequired()])
+    repeatpassword = PasswordField('repeatpassword',validators=[DataRequired()])
+
 class Anonymous(AnonymousUserMixin, User):
     def __init__(self):
         User.__init__(self, "", "")
@@ -56,8 +61,8 @@ def load_user(userid):
     users =  User.query.filter_by(email=userid)
     return users.first()
 
-@app.route('/login', methods=['GET','POST'])
-def login():
+@app.route('/authenticate', methods=['GET','POST'])
+def authenticate():
     form = LoginForm()
     if form.validate_on_submit():
         users = User.query.filter_by(username = request.form["name"])
@@ -68,6 +73,39 @@ def login():
                 db.session.commit()
                 login_user(user)
     return redirect(request.form["redirect"])
+
+@app.route('/signin', methods=['GET','POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        users = User.query.filter_by(username = request.form["name"])
+        user = users.first()
+        if user != None :
+            if pbkdf2_sha256.verify(request.form["password"],user.password) :
+                user.authenticated = True
+                db.session.commit()
+                login_user(user)
+                return redirect("/")
+    return render_template("signin.html",form = form);
+
+@app.route('/signup', methods=['GET','POST'])
+def signup():
+    form = SignupForm()
+    if request.method == 'GET' :
+        return render_template("signup.html",form = form,error="")
+    error = "some fields were empty"
+    if form.validate_on_submit():
+        error = "some fields were empty"
+        if request.form["password"] == request.form["repeatpassword"] :
+            newuser = model.User(request.form["name"],"")
+            newuser.password = pbkdf2_sha256.encrypt(request.form["password"])
+            newuser.authenticated = True
+            db.session.add(newuser)
+            db.session.commit()
+            return redirect("/")
+        else :
+            error = "passwords did not match {} {}".format(form.password,form.repeatpassword)
+    return render_template("signup.html",form = form,error=error)
 
 @app.route('/logout', methods=['GET'])
 def logout():
