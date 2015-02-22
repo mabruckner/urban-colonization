@@ -1,5 +1,6 @@
 from flask.ext.sqlalchemy import SQLAlchemy
 import random
+from perform import zbarimg
 
 class Model():
     def __init__(self, app):
@@ -12,10 +13,15 @@ class Model():
             name = db.Column(db.String)
             image = db.Column(db.String)
             description = db.Column(db.String)
-            def __init__(self, short_name, name, imagepath):
+            passcode = db.Column(db.String)
+            def __init__(self, short_name, name, imagepath,passcode = ""):
                 self.image = imagepath
                 self.name = name
                 self.short_name = short_name
+                self.passcode = passcode
+            def verify(self,filepath):
+                contents = zbarimg(filepath)
+                return contenst.contains(self.passcode)
 
             def __str__(self):
                 return "(({}, {}, {}, {}))".format(self.id, self.name, self.image, self.description)
