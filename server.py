@@ -152,7 +152,7 @@ def getuser():
 def index():
     if current_user.is_anonymous():
         return redirect("/signin")
-    return render_template('index.html',form=LoginForm(), hint=current_user.current_lichen.hint)
+    return render_template('index.html',form=LoginForm(), hint=current_user.current_lichen.hint, alert=request.args.get('alert', ""))
 
 @login_required
 @app.route('/lichens', methods=['GET','POST'])
@@ -191,8 +191,8 @@ def recievepicture():
             current_user.current_lichen = random.choice(current_user.get_without_state())
             current_user.set_state(current_user.current_lichen, "looking")
             db.session.commit()
-            return "YES!"
-    return "Nooo"
+            return redirect("/?alert=success")
+    return redirect("/?alert=failure")
 
 @login_required
 @app.route('/js/<remainder>',methods=['GET'])
