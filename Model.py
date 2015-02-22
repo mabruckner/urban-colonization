@@ -14,30 +14,21 @@ class Model():
             image = db.Column(db.String)
             description = db.Column(db.String)
             passcode = db.Column(db.String)
-            def __init__(self, short_name, name, imagepath,passcode = ""):
+            hint = db.Column(db.String)
+
+            def __init__(self, short_name, name, imagepath):
                 self.image = imagepath
                 self.name = name
                 self.short_name = short_name
-                self.passcode = passcode
+
             def verify(self,filepath):
                 contents = zbarimg(filepath)
-                return contenst.contains(self.passcode)
+                return self.passcode in contents
 
             def __str__(self):
                 return "(({}, {}, {}, {}))".format(self.id, self.name, self.image, self.description)
 
         self.Lichen = Lichen
-
-        class Clue(db.Model):
-            id = db.Column(db.Integer, primary_key=True)
-            text = db.Column(db.String)
-            target = db.Column(db.Integer)
-            def __init__(self, text, target):
-                self.text = text
-                self.target = target
-
-            def __str__(self):
-                return "(({}, {}, {}))".format(self.id, self.text, self.target)
 
         class User(self.db.Model):
             id = db.Column(db.Integer, primary_key=True)
@@ -48,15 +39,15 @@ class Model():
             is_first_time = db.Column(db.Boolean())
             hint_access = db.Column(db.String)
 
-            current_clue_id = db.Column(db.Integer, db.ForeignKey('clue.id'))
-            current_clue = db.relationship('Clue', backref=db.backref('users', lazy='dynamic'))
+            current_lichen_id = db.Column(db.Integer, db.ForeignKey('lichen.id'))
+            current_lichen = db.relationship('Lichen', backref=db.backref('users', lazy='dynamic'))
 
             def __init__(self, username, email):
                 self.username = username
 #                self.email = email
                 self.authenticated = False
                 self.is_first_time = True
-                self.current_clue = User.get_random_clue()
+                self.current_lichen = User.get_random_lichen()
                 self.hint_access = "{}"
 
             def __repr__(self):
@@ -75,13 +66,11 @@ class Model():
                 return self.username
 
             @staticmethod
-            def get_random_clue():
-                clues = Clue.query.all()
-                if len(clues) > 0:
-                    return random.choice(clues)
+            def get_random_lichen():
+                lichens = Lichen.query.all()
+                if len(lichens) > 0:
+                    return random.choice(lichens)
                 else:
                     return None #TODO: handle this later
 
         self.User = User
-
-        self.Clue = Clue

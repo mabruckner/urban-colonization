@@ -151,7 +151,7 @@ def getuser():
 def index():
     if current_user.is_anonymous():
         return redirect("/signin")
-    return render_template('index.html',form=LoginForm(), hint=current_user.current_clue.text)
+    return render_template('index.html',form=LoginForm(), hint=current_user.current_lichen.hint)
 
 @login_required
 @app.route('/lichens', methods=['GET','POST'])
@@ -166,10 +166,10 @@ def lichen(name):
     return render_template('lichen.html',form=LoginForm(), lichen=lichen)
 
 @login_required
-@app.route('/rotateclue', methods=['GET','POST'])
-def rotateclue():
-    clue = model.User.get_random_clue()
-    current_user.current_clue = clue
+@app.route('/rotatelichen', methods=['GET','POST'])
+def rotatelichen():
+    lichen = model.User.get_random_lichen()
+    current_user.current_lichen = lichen
     db.session.commit()
     return redirect("/")
 
@@ -183,8 +183,11 @@ def takepicture():
 def recievepicture():
     f = request.files['picture']
     if f:
-        f.save(os.path.join(UPLOAD_FOLDER, f.filename))
-    return redirect("/")
+        path = os.path.join(UPLOAD_FOLDER, f.filename)
+        f.save(path)
+        if current_user.current_lichen.verify(path):
+            return "YES!"
+    return "Nooo"
 
 @login_required
 @app.route('/js/<remainder>',methods=['GET'])

@@ -2,8 +2,15 @@
 {% block navcontent %}
 <h1><img class="lichen" src="{{ lichen.image }}" alt=""> {{ lichen.name }}</h1>
  <br />
-<div class="well">{{ lichen.description }}</div>
+
+ <h3>Hint:</h3>
+ <p class="well">{{ lichen.hint }}</p>
+<br />
 <a class="btn btn-primary btn-lg" href="#">Confirm find</a>
+<br />
+<br />
+
+<div class="well">{{ lichen.description }}</div>
 
 <h2>Gallery</h2>
 
