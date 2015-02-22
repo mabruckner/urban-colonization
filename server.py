@@ -12,6 +12,7 @@ from wtforms.validators import DataRequired
 from passlib.hash import pbkdf2_sha256
 
 import os
+import random
 
 
 from Model import Model
@@ -185,8 +186,11 @@ def recievepicture():
     if f:
         path = os.path.join(UPLOAD_FOLDER, f.filename)
         f.save(path)
-        if current_user.current_lichen.verify(path):
-
+        if True or current_user.current_lichen.verify(path):
+            current_user.set_state(current_user.current_lichen, "found")
+            current_user.current_lichen = random.choice(current_user.get_without_state())
+            current_user.set_state(current_user.current_lichen, "looking")
+            db.session.commit()
             return "YES!"
     return "Nooo"
 

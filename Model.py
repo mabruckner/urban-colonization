@@ -38,7 +38,7 @@ class Model():
             password = db.Column(db.String)
             authenticated = db.Column(db.Boolean())
             is_first_time = db.Column(db.Boolean())
-            clue_access = db.Column(db.String)
+            hint_access = db.Column(db.String)
 
             current_lichen_id = db.Column(db.Integer, db.ForeignKey('lichen.id'))
             current_lichen = db.relationship('Lichen', backref=db.backref('users', lazy='dynamic'))
@@ -70,12 +70,12 @@ class Model():
             def get_state_for(self,clueval):
                 cluemap = json.loads(self.hint_access)
                 return cluemap[clueval]
-            
+
             def get_with_state(self,state):
                 cluemap = json.loads(self.hint_access)
                 cluestrings = []
-                for clustring in cluemap :
-                    if clumap[cluestring] == state :
+                for cluestring in cluemap :
+                    if cluemap[cluestring] == state :
                         cluestrings.append(cluestring)
                 q = Lichen.query.all()
                 output = []
@@ -84,8 +84,22 @@ class Model():
                         output.append(lichen)
                 return output
 
+            def get_without_state(self):
+                cluemap = json.loads(self.hint_access)
+                cluestrings = []
+                for cluestring in cluemap:
+                    if cluemap[cluestring] != "" :
+                        cluestrings.append(cluestring)
+                q = Lichen.query.all()
+                output = []
+                for lichen in q :
+                    if str(lichen.id) not in cluestrings :
+                        output.append(lichen)
+                return output
+
             def get_looking(self):
                 return self.get_with_state("looking")
+
             def get_found(self):
                 return self.get_with_state("found")
 
