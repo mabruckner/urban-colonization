@@ -2,7 +2,11 @@
 {% block navcontent %}
 <h1><img class="lichen" src="{{ lichen.image }}" alt=""> {{ lichen.name }}</h1>
  <br />
-
+ {% if locked %}
+    <div class="alert alert-danger">
+        This Lichen is locked. Find an unlocked lichen to recieve a hint
+    </div>
+    {% else %}
  <h3>Hint:</h3>
  <p class="well">{{ lichen.hint }}</p>
 <br />
@@ -10,6 +14,12 @@
 <br />
 <br />
 
+{% if unfound %}
+<div class="alert alert-danger">
+    This Lichen has not yet been found. Confirm that you found it in order to unlock the gallery and additional information about this Lichen.
+</div>
+{% else %}
+<br />
 <h2>Science info</h2>
 <div class="well">{{ lichen.description }}</div>
 
@@ -77,4 +87,6 @@
         </a>
     </div>
 </div>
+{% endif %}
+{% endif %}
 {% endblock %}

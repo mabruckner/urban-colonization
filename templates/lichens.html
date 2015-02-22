@@ -2,9 +2,21 @@
 {% block navcontent %}
 <div style="position: relative; height: 1716px;" id="container" class="clearfix masonry">
 
-    {% for lichen in lichens %}
+    {% for lichen in looking %}
+        <div class="box photo col3 masonry-brick">
+            <span class="label label-default">{{ lichen.name }}, try and find me!</span>
+            <a href="/lichens/{{ lichen.short_name }}"><img src="{{ lichen.image }}"></a>
+        </div>
+    {% endfor %}
+    {% for lichen in found %}
         <div class="box photo col3 masonry-brick">
             <span class="label label-default">{{ lichen.name }}</span>
+            <a href="/lichens/{{ lichen.short_name }}"><img src="{{ lichen.image }}"></a>
+        </div>
+    {% endfor %}
+    {% for lichen in locked %}
+        <div class="box photo col3 masonry-brick">
+            <span class="label label-danger">{{ lichen.name }}</span>
             <a href="/lichens/{{ lichen.short_name }}"><img src="{{ lichen.image }}"></a>
         </div>
     {% endfor %}

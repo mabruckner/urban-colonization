@@ -157,14 +157,18 @@ def index():
 @login_required
 @app.route('/lichens', methods=['GET','POST'])
 def lichens():
-    lichens = model.Lichen.query.all()
-    return render_template('lichens.html',form=LoginForm(), lichens=lichens)
+    looking = current_user.get_looking()
+    found = current_user.get_found()
+    locked = current_user.get_without_state()
+    return render_template('lichens.html',form=LoginForm(), looking = looking, found = found,locked = locked)
 
 @login_required
 @app.route('/lichens/<name>', methods=['GET','POST'])
 def lichen(name):
     lichen = model.Lichen.query.filter_by(short_name=name).first()
-    return render_template('lichen.html',form=LoginForm(), lichen=lichen)
+    locked = lichen in current_user.get_without_state()
+    unfound = lichen not in current_user.get_found()
+    return render_template('lichen.html',form=LoginForm(), lichen=lichen,locked = locked,unfound = unfound)
 
 @login_required
 @app.route('/rotatelichen', methods=['GET','POST'])
