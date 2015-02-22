@@ -40,7 +40,8 @@ div.logincontainer {
 }
 
 .box {
-    width: 33.2%;
+    /*width: 33.2%;*/
+    width:49.5%;
     position:relative;
 }
 
