@@ -186,6 +186,7 @@ def recievepicture():
         path = os.path.join(UPLOAD_FOLDER, f.filename)
         f.save(path)
         if current_user.current_lichen.verify(path):
+
             return "YES!"
     return "Nooo"
 
