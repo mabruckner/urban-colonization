@@ -151,10 +151,7 @@ def getuser():
 
 @app.route('/', methods=['GET','POST'])
 def hello():
-    #return current_user.username
     return render_template('index.html',form=LoginForm())
-
-app.secret_key = "Secret"
 
 @app.route('/js/<remainder>',methods=['GET'])
 @app.route('/img/<remainder>',methods=['GET'])
