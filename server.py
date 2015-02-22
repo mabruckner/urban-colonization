@@ -39,6 +39,12 @@ assets.register('css_all', css)
 js = Bundle("js/vendor/jquery-1.11.2.min.js", "js/vendor/modernizr-2.8.3.min.js", 'js/bootstrap.js', 'js/main.js', output='js/gen/packed.js')
 assets.register('js_all', js)
 
+def create_user(username,password):
+    newuser = model.User(username,"")
+    newuser.password = pbkdf2_sha256.encrypt(password)
+    db.session.add(newuser)
+    db.session.commit()
+
 class LoginForm(Form):
     name = StringField('name',validators=[DataRequired()])
     password = PasswordField('password',validators=[DataRequired()])
@@ -77,6 +83,9 @@ def authenticate():
 @app.route('/signin', methods=['GET','POST'])
 def login():
     form = LoginForm()
+    if request.method == 'GET' :
+        return render_template("signin.html",form = form,error = "")
+    error = "some fields were empty"
     if form.validate_on_submit():
         users = User.query.filter_by(username = request.form["name"])
         user = users.first()
@@ -86,7 +95,8 @@ def login():
                 db.session.commit()
                 login_user(user)
                 return redirect("/")
-    return render_template("signin.html",form = form);
+        error = "incorrect username or password"
+    return render_template("signin.html",form = form,error = error);
 
 @app.route('/signup', methods=['GET','POST'])
 def signup():
@@ -104,7 +114,7 @@ def signup():
             db.session.commit()
             return redirect("/")
         else :
-            error = "passwords did not match {} {}".format(form.password,form.repeatpassword)
+            error = "passwords did not match"
     return render_template("signup.html",form = form,error=error)
 
 @app.route('/logout', methods=['GET'])

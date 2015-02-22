@@ -4,6 +4,12 @@
 <div class="logincontainer">
 <form action="/signin" method="POST" class="form-signin">
     <h2 class="form-signin-heading">Sign In</h2>
+    {% if error != "" %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+    {% endif %}
+    <input type="hidden" name="redirect" value="/"/>
     <input type="hidden" name="redirect" value="/"/>
     {{ form.csrf_token }}
     {{ form.name(size=20,class="form-control",placeholder="username") }}
