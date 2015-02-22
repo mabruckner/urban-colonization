@@ -1,6 +1,6 @@
 {% extends "navbarbase.html" %}
 {% block navcontent %}
-<h1><img class="lichen" src="{{ lichen.image }}" alt=""> {{ lichen.name }}</h1>
+<h1><img class="lichen" src="{{ lichen.image }}" alt=""> {{ lichen.name }} <span class="badge">num found: {{ lichen.num_found }}</span></h1>
  <br />
  {% if locked %}
     <div class="alert alert-danger">

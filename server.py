@@ -152,7 +152,7 @@ def getuser():
 def index():
     if current_user.is_anonymous():
         return redirect("/signin")
-    return render_template('index.html',form=LoginForm(), hint=current_user.current_lichen.hint, alert=request.args.get('alert', ""))
+    return render_template('index.html',form=LoginForm(), hint=current_user.current_lichen.hint, alert=request.args.get('alert', ""), alert_type=request.args.get('alert_type', ''))
 
 @login_required
 @app.route('/lichens', methods=['GET','POST'])
@@ -192,11 +192,23 @@ def recievepicture():
         f.save(path)
         if current_user.current_lichen.verify(path):
             current_user.set_state(current_user.current_lichen, "found")
-            current_user.current_lichen = random.choice(current_user.get_without_state())
-            current_user.set_state(current_user.current_lichen, "looking")
-            db.session.commit()
-            return redirect("/?alert=success")
-    return redirect("/?alert=failure")
+            current_user.current_lichen.num_found +=1
+
+            name = current_user.current_lichen.name
+            num = current_user.current_lichen.num_found
+
+            lichens_left = current_user.get_without_state()
+            if len(lichens_left) > 0:
+                current_user.current_lichen = random.choice(lichens_left)
+                current_user.set_state(current_user.current_lichen, "looking")
+                db.session.commit()
+                return redirect("/?alert_type=success&alert=Found {}! - You are finder number {}".format(name, num))
+            else:
+                db.session.commit()
+                return redirect("/?alert_type=success&alert=Found {}! - You are finder number {} - Congratz, you found all lichens!".format(name, num))
+
+    db.session.commit()
+    return redirect("/?alert_type=failure&alert={}".format("Incorrect"))
 
 @login_required
 @app.route('/js/<remainder>',methods=['GET'])

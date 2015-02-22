@@ -16,11 +16,13 @@ class Model():
             description = db.Column(db.String)
             passcode = db.Column(db.String)
             hint = db.Column(db.String)
+            num_found = db.Column(db.Integer)
 
             def __init__(self, short_name, name, imagepath):
                 self.image = imagepath
                 self.name = name
                 self.short_name = short_name
+                self.num_found = 0
 
             def verify(self,filepath):
                 contents = zbarimg(filepath)
