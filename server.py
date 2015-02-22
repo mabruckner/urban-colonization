@@ -146,6 +146,13 @@ def lichen(name):
     lichen = model.Lichen.query.filter_by(short_name=name).first()
     return render_template('lichen.html',form=LoginForm(), lichen=lichen)
 
+@app.route('/rotateclue', methods=['GET','POST'])
+def rotateclue():
+    clue = model.User.get_random_clue()
+    current_user.current_clue = clue
+    db.session.commit()
+    return redirect("/")
+
 @app.route('/js/<remainder>',methods=['GET'])
 @app.route('/img/<remainder>',methods=['GET'])
 def get_static(remainder):

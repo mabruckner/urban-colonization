@@ -50,7 +50,7 @@ class Model():
                 self.email = email
                 self.authenticated = False
                 self.is_first_time = True
-                self.current_clue = self.get_initial_clue()
+                self.current_clue = User.get_random_clue()
                 self.hint_access = "{}"
 
             def __repr__(self):
@@ -68,7 +68,8 @@ class Model():
             def get_id(self) :
                 return self.email
 
-            def get_initial_clue(self):
+            @staticmethod
+            def get_random_clue():
                 clues = Clue.query.all()
                 if len(clues) > 0:
                     return random.choice(clues)

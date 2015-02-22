@@ -41,6 +41,13 @@ div.logincontainer {
 
 .box {
     width: 33.2%;
+    position:relative;
+}
+
+.box label{
+    position: absolute;
+    left: -4px;
+    top: -3px;
 }
 
 .box img {
