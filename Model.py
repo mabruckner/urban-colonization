@@ -6,8 +6,6 @@ class Model():
         self.db = SQLAlchemy(app)
         db = self.db
 
-
-
         class Lichen(db.Model):
             id = db.Column(db.Integer, primary_key=True)
             name = db.Column(db.String)

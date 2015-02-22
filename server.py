@@ -39,12 +39,6 @@ assets.register('css_all', css)
 js = Bundle("js/vendor/jquery-1.11.2.min.js", "js/vendor/modernizr-2.8.3.min.js", 'js/bootstrap.js', 'js/main.js', output='js/gen/packed.js')
 assets.register('js_all', js)
 
-def create_user(username,password):
-    newuser = model.User(username,"")
-    newuser.password = pbkdf2_sha256.encrypt(password)
-    db.session.add(newuser)
-    db.session.commit()
-
 class LoginForm(Form):
     name = StringField('name',validators=[DataRequired()])
     password = PasswordField('password',validators=[DataRequired()])
@@ -61,6 +55,12 @@ class Anonymous(AnonymousUserMixin, User):
     def is_anonymous(self):
         return True
 login_manager.anonymous_user = Anonymous
+
+def create_user(username,password):
+    newuser = model.User(username,"")
+    newuser.password = pbkdf2_sha256.encrypt(password)
+    db.session.add(newuser)
+    db.session.commit()
 
 @login_manager.user_loader
 def load_user(userid):
